@@ -13,10 +13,6 @@ MongoClient.connect('mongodb+srv://puma1800:ghfkddl7@cluster0.soieyzo.mongodb.ne
 
         db = client.db('nodeapp');
 
-        db.collection('post').insertOne({ 이름: 'John', 나이: 40 }, function (에러, 결과) {
-            console.log('저장완료');
-        });
-
         app.listen('1215', function () {
             console.log('listening on 1215')
         });
@@ -60,4 +56,13 @@ app.get('/list', function (req, res) {
         res.render('list.ejs', { posts: 결과 });
     });
 
+});
+
+app.delete('/delete', function(req, res){
+    //DB에서 글 삭제
+    req.body._id = parseInt(req.body._id);
+    db.collection('post').deleteOne(req.body, function(에러, 결과){
+        console.log('삭제완료');
+        res.status(200).send('성공했습니다');
+    })
 });
