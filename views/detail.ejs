@@ -34,41 +34,9 @@
         </div>
     </nav>
 
-    <h4 class="'ml-2 my-3">서버에서 가져온 할일 리스트</h4>
-    <ul class="list-group">
-        <% for (var i = 0; i < posts.length; i++){ %>
-        <li class="list-group-item">
-            <a style="text-decoration: none; color: lightgray" href="http://localhost:1215/detail/<%= posts[i]._id %>">
-            <h> 할일 제목 : <%= posts[i].제목 %> </h>
-            <p> 할일 마감날짜 : <%= posts[i].날짜 %> </p>
-            </a>
-            <button class="delete" data-id="<%= posts[i]._id %>">삭제</button>
-        </li>
-        <% } %>
-    </ul>
-
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-
-<script>
-
-    $('.delete').click(function(e){
-        let 글번호 = e.target.dataset.id;
-        let 지금누른거 = $(this);
-        
-        $.ajax({
-        method : 'DELETE',
-        url : '/delete',
-        data : {_id : 글번호}
-    }).done(function(결과){
-        console.log('성공했어요')
-        지금누른거.parent('li').fadeOut();
-    }).fail(function(에러){
-        //실패시 실행할 코드는 여기
-    });
-    })
-
-    
-</script>
+    <h4>상세페이지 입니다.</h4>
+    <h4>제목 : <%= data.제목 %></h4>
+    <h4>날짜 : <%= data.날짜 %></h4>
 
     
 
