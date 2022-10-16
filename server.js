@@ -3,6 +3,10 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
+app.use('/public', express.static('public'));
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
+
 
 const MongoClient = require('mongodb').MongoClient;
 
@@ -18,18 +22,12 @@ MongoClient.connect('mongodb+srv://puma1800:ghfkddl7@cluster0.soieyzo.mongodb.ne
         });
     })
 
-
-
-app.get('/beauty', function (req, res) {
-    res.send('뷰티용품 사이트 입니다');
-});
-
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.render('index.ejs');
 });
 
 app.get('/write', function (req, res) {
-    res.sendFile(__dirname + '/write.html');
+    res.render('write.ejs');
 });
 
 app.post('/add', function (req, res) {
@@ -71,5 +69,20 @@ app.get('/detail/:id', function(req, res){
     db.collection('post').findOne({_id: parseInt(req.params.id)}, function(에러, 결과){
         console.log(결과);
         res.render('detail.ejs', { data : 결과 });
+    })
+})
+
+app.get('/edit/:id', function(req, res){
+    db.collection('post').findOne({_id: parseInt(req.params.id)}, function(에러, 결과){
+        console.log(결과);
+        res.render('edit.ejs', { post : 결과 });
+    })
+})
+
+app.put('/edit', function(req, res){
+    db.collection('post').updateOne({_id : parseInt(req.body.id) },{ $set : { 제목: req.body.title, 날짜: req.body.date }},
+    function(에러, 결과){
+        console.log('수정완료')
+        res.redirect('/list')
     })
 })
