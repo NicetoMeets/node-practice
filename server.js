@@ -48,13 +48,21 @@ app.post('/add', function (req, res) {
 });
 
 app.get('/list', function (req, res) {
-
+    //디비에 저장된 post라는 콜렉션 안의 모든 데이터 꺼내기
     db.collection('post').find().toArray(function (에러, 결과) {
         console.log(결과);
         res.render('list.ejs', { posts: 결과 });
     });
-
 });
+
+app.get('/search', (req, res)=>{
+    console.log(req.query);
+    //제목이 req.query.value인 데이터 다 찿아주세요
+    db.collection('post').find({제목 : req.query.value}).toArray((에러, 결과)=>{    
+    console.log(결과)
+    res.render('search.ejs', { posts : 결과 })
+    })
+})
 
 app.delete('/delete', function (req, res) {
     //DB에서 글 삭제
