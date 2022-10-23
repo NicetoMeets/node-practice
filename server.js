@@ -58,7 +58,7 @@ app.get('/list', function (req, res) {
 app.get('/search', (req, res)=>{
     console.log(req.query);
     //제목이 req.query.value인 데이터 다 찿아주세요
-    db.collection('post').find({제목 : req.query.value}).toArray((에러, 결과)=>{    
+    db.collection('post').find({ $text : { $search: req.query.value }}).toArray((에러, 결과)=>{    
     console.log(결과)
     res.render('search.ejs', { posts : 결과 })
     })
