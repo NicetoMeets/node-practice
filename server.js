@@ -55,12 +55,26 @@ app.get('/list', function (req, res) {
     });
 });
 
-app.get('/search', (req, res)=>{
+app.get('/search', (req, res) => {
+
+    var 검색조건 = [
+        {
+            $search: {
+                index: 'TitleSearch',
+                text: {
+                    query: req.query.value,
+                    path: '제목'  // 제목날짜 둘다 찾고 싶으면 ['제목', '날짜']
+                }
+            }
+        },
+        { $sort : { _id : 1 } },    //id 오름차순으로 결과 정렬
+        { $limit : 10 },            //검색결과 맨위 10개만 가져옴
+        { $project : { 제목 : 1, _id : 0 } }    //검색결과중 원하는 항목만보여줌 제목만 가져옴
+    ]
     console.log(req.query);
-    //제목이 req.query.value인 데이터 다 찿아주세요
-    db.collection('post').find({ $text : { $search: req.query.value }}).toArray((에러, 결과)=>{    
-    console.log(결과)
-    res.render('search.ejs', { posts : 결과 })
+    db.collection('post').aggregate(검색조건).toArray((에러, 결과) => {
+        console.log(결과)
+        res.render('search.ejs', { posts: 결과 })
     })
 })
 
@@ -134,22 +148,22 @@ passport.use(new LocalStrategy({
 }));
 
 passport.serializeUser(function (user, done) {      //유저의 id 데이터를 바탕으로 세션데이터를 만들어주고 세션의 아이디를 쿠키로 만들어 브라우저로 보냄 
-    done(null, user.id) 
+    done(null, user.id)
 });
 
 passport.deserializeUser(function (아이디, done) {      //세션 아이디를 바탕으로 유저의 정보를 DB에서 찿아줌
     db.collection('login').findOne({ id: 아이디 }, function (에러, 결과) {
         done(null, 결과)
     })
-}); 
+});
 
-app.get('/mypage', isLogin ,function(req, res){
+app.get('/mypage', isLogin, function (req, res) {
     console.log(req.user)   //DB에 데이터가 이곳에 들어감
-    res.render('mypage.ejs', {사용자 : req.user})
+    res.render('mypage.ejs', { 사용자: req.user })
 })
 
-function isLogin(req, res, next){
-    if (req.user){
+function isLogin(req, res, next) {
+    if (req.user) {
         next()
     } else {
         res.send('로그인안하셨습니다')
