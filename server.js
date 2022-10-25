@@ -69,7 +69,7 @@ app.get('/search', (req, res) => {
         },
         { $sort : { _id : 1 } },    //id 오름차순으로 결과 정렬
         { $limit : 10 },            //검색결과 맨위 10개만 가져옴
-        { $project : { 제목 : 1, _id : 0 } }    //검색결과중 원하는 항목만보여줌 제목만 가져옴
+        { $project : { 제목 : 1, _id : 1 } }    //검색결과중 원하는 항목만보여줌 제목만 가져옴
     ]
     console.log(req.query);
     db.collection('post').aggregate(검색조건).toArray((에러, 결과) => {
