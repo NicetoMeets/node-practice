@@ -157,6 +157,12 @@ passport.deserializeUser(function (아이디, done) {      //세션 아이디를
     })
 });
 
+app.post('/register', function (req, res) {
+    db.collection('login').insertOne({ id: req.body.id, pw: req.body.pw }, function (에러, 결과) {
+    res.redirect('/')
+    })
+});
+
 app.get('/mypage', isLogin, function (req, res) {
     console.log(req.user)   //DB에 데이터가 이곳에 들어감
     res.render('mypage.ejs', { 사용자: req.user })
