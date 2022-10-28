@@ -30,23 +30,6 @@ app.get('/write', function (req, res) {
     res.render('write.ejs');
 });
 
-app.post('/add', function (req, res) {
-    res.send('전송완료')
-
-    db.collection('counter').findOne({ name: '게시물갯수' },
-        function (에러, 결과) {
-            let 총게시물갯수 = 결과.totalPost;
-
-            db.collection('post').insertOne({ _id: 총게시물갯수 + 1, 제목: req.body.title, 날짜: req.body.date },
-                function (에러, 결과) {
-                    console.log('저장완료');
-                    db.collection('counter').updateOne({ name: '게시물갯수' }, { $inc: { totalPost: 1 } }, function (에러, 결과) {
-                        if (에러) { return console.log(에러) }
-                    })
-                });
-        })
-});
-
 app.get('/list', function (req, res) {
     //디비에 저장된 post라는 콜렉션 안의 모든 데이터 꺼내기
     db.collection('post').find().toArray(function (에러, 결과) {
@@ -77,15 +60,6 @@ app.get('/search', (req, res) => {
         res.render('search.ejs', { posts: 결과 })
     })
 })
-
-app.delete('/delete', function (req, res) {
-    //DB에서 글 삭제
-    req.body._id = parseInt(req.body._id);
-    db.collection('post').deleteOne(req.body, function (에러, 결과) {
-        console.log('삭제완료');
-        res.status(200).send('성공했습니다');
-    })
-});
 
 app.get('/detail/:id', function (req, res) {
     db.collection('post').findOne({ _id: parseInt(req.params.id) }, function (에러, 결과) {
@@ -157,16 +131,46 @@ passport.deserializeUser(function (아이디, done) {      //세션 아이디를
     })
 });
 
-app.post('/register', function (req, res) {
+app.post('/register', function (req, res) {         //회원가입
     db.collection('login').insertOne({ id: req.body.id, pw: req.body.pw }, function (에러, 결과) {
     res.redirect('/')
+    })
+});
+
+app.post('/add', function (req, res) {
+    res.send('전송완료')
+
+    db.collection('counter').findOne({ name: '게시물갯수' },
+        function (에러, 결과) {
+            let 총게시물갯수 = 결과.totalPost;
+
+            let post = { _id: 총게시물갯수 + 1, 작성자: req.user._id, 제목: req.body.title, 날짜: req.body.date }
+
+            db.collection('post').insertOne( post , function (에러, 결과) {
+                    console.log('저장완료');
+                    db.collection('counter').updateOne({ name: '게시물갯수' }, { $inc: { totalPost: 1 } }, function (에러, 결과) {
+                        if (에러) { return console.log(에러) }
+                    })
+                });
+        })
+});
+
+app.delete('/delete', function (req, res) {
+    req.body._id = parseInt(req.body._id);
+
+    let deleteData = { _id : req.body._id, 작성자 : req.user._id }  //두조건이 일치하는 게시물 삭제
+    
+    //요청.body에 담겨온 게시물번호를 가진 글을 db에서 찿아서 삭제해주세요
+    db.collection('post').deleteOne(deleteData, function (에러, 결과) {
+        console.log('삭제완료');
+        res.status(200).send('성공했습니다');
     })
 });
 
 app.get('/mypage', isLogin, function (req, res) {
     console.log(req.user)   //DB에 데이터가 이곳에 들어감
     res.render('mypage.ejs', { 사용자: req.user })
-})
+});
 
 function isLogin(req, res, next) {
     if (req.user) {
@@ -174,4 +178,5 @@ function isLogin(req, res, next) {
     } else {
         res.send('로그인안하셨습니다')
     }
-}
+};
+
