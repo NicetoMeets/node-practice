@@ -50,9 +50,9 @@ app.get('/search', (req, res) => {
                 }
             }
         },
-        { $sort : { _id : 1 } },    //id 오름차순으로 결과 정렬
-        { $limit : 10 },            //검색결과 맨위 10개만 가져옴
-        { $project : { 제목 : 1, _id : 1 } }    //검색결과중 원하는 항목만보여줌 제목만 가져옴
+        { $sort: { _id: 1 } },    //id 오름차순으로 결과 정렬
+        { $limit: 10 },            //검색결과 맨위 10개만 가져옴
+        { $project: { 제목: 1, _id: 1 } }    //검색결과중 원하는 항목만보여줌 제목만 가져옴
     ]
     console.log(req.query);
     db.collection('post').aggregate(검색조건).toArray((에러, 결과) => {
@@ -133,7 +133,7 @@ passport.deserializeUser(function (아이디, done) {      //세션 아이디를
 
 app.post('/register', function (req, res) {         //회원가입
     db.collection('login').insertOne({ id: req.body.id, pw: req.body.pw }, function (에러, 결과) {
-    res.redirect('/')
+        res.redirect('/')
     })
 });
 
@@ -146,20 +146,20 @@ app.post('/add', function (req, res) {
 
             let post = { _id: 총게시물갯수 + 1, 작성자: req.user._id, 제목: req.body.title, 날짜: req.body.date }
 
-            db.collection('post').insertOne( post , function (에러, 결과) {
-                    console.log('저장완료');
-                    db.collection('counter').updateOne({ name: '게시물갯수' }, { $inc: { totalPost: 1 } }, function (에러, 결과) {
-                        if (에러) { return console.log(에러) }
-                    })
-                });
+            db.collection('post').insertOne(post, function (에러, 결과) {
+                console.log('저장완료');
+                db.collection('counter').updateOne({ name: '게시물갯수' }, { $inc: { totalPost: 1 } }, function (에러, 결과) {
+                    if (에러) { return console.log(에러) }
+                })
+            });
         })
 });
 
 app.delete('/delete', function (req, res) {
     req.body._id = parseInt(req.body._id);
 
-    let deleteData = { _id : req.body._id, 작성자 : req.user._id }  //두조건이 일치하는 게시물 삭제
-    
+    let deleteData = { _id: req.body._id, 작성자: req.user._id }  //두조건이 일치하는 게시물 삭제
+
     //요청.body에 담겨온 게시물번호를 가진 글을 db에서 찿아서 삭제해주세요
     db.collection('post').deleteOne(deleteData, function (에러, 결과) {
         console.log('삭제완료');
@@ -180,3 +180,24 @@ function isLogin(req, res, next) {
     }
 };
 
+let multer = require('multer');
+let storage = multer.diskStorage({
+
+    destination: function (req, file, cb) {
+        cb(null, './public/image')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+
+});
+
+let upload = multer({ storage: storage });
+
+app.get('/upload', function (req, res) {
+    res.render('upload.ejs')
+});
+
+app.post('/upload', upload.single("profile"), function(req, res){
+    res.send('업로드완료')
+}); //input의 name 속성이름 '프로필' 데이터를 받아옴
