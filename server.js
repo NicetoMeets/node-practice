@@ -188,16 +188,23 @@ let storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname)
-    }
 
+    }
 });
 
 let upload = multer({ storage: storage });
+
 
 app.get('/upload', function (req, res) {
     res.render('upload.ejs')
 });
 
+
 app.post('/upload', upload.single("profile"), function(req, res){
     res.send('업로드완료')
-}); //input의 name 속성이름 '프로필' 데이터를 받아옴
+}); 
+//input의 name 속성이름 '프로필' 데이터를 받아옴
+
+app.get('/image/:imageName', function(req, res){
+    res.sendFile( __dirname + '/public/image/' + req.params.imageName )
+})
