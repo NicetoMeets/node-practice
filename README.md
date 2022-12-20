@@ -13,7 +13,7 @@ Nodejs를 이용한 CRUD 검색게시판입니다
 
 # 구현 기능
 - 검색
-- Creat
+- Create
 - Read
 - Update
 - Delete
