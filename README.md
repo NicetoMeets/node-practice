@@ -20,5 +20,8 @@ Nodejs를 이용한 CRUD 검색게시판입니다
 
 # 적용 기술
 ## Nodejs
-
+- Express 
 ## Ejs
+- ejs 문법
+## MongoDB
+- DB
