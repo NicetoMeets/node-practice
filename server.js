@@ -102,6 +102,10 @@ app.post('/login', passport.authenticate('local', {
     res.redirect('/')
 });
 
+app.get('/fail', function (req, res) {
+    res.render('fail.ejs')
+});
+
 passport.use(new LocalStrategy({
     usernameField: 'id',
     passwordField: 'pw',
@@ -138,7 +142,7 @@ app.post('/register', function (req, res) {         //회원가입
 });
 
 app.post('/add', function (req, res) {
-    res.send('전송완료')
+    res.redirect('/')
 
     db.collection('counter').findOne({ name: '게시물갯수' },
         function (에러, 결과) {
@@ -201,7 +205,7 @@ app.get('/upload', function (req, res) {
 
 
 app.post('/upload', upload.single("profile"), function(req, res){
-    res.send('업로드완료')
+    res.redirect('/')
 }); 
 //input의 name 속성이름 '프로필' 데이터를 받아옴
 
